@@ -1,0 +1,4 @@
+// 连点器 Auto Clicker - 资源文件
+// IDI_ICON1 同时用作应用程序图标和窗口图标
+#define IDI_ICON1 1
+IDI_ICON1 ICON "icon.ico"

@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "MSVC build",
+            "type": "shell",
+            "command": "cmd.exe",
+            "args": [
+                "/c",
+                "\"call \\\"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\VC\\\\Auxiliary\\\\Build\\\\vcvars64.bat\\\" && cd /d ${workspaceFolder}\\\\src && rc /nologo /fo resources.res resources.rc && cl /utf-8 /EHsc /O2 /MT /nologo /Fe:${workspaceFolder}\\\\bin\\\\AutoClicker.exe main.cpp resources.res user32.lib gdi32.lib shell32.lib comdlg32.lib advapi32.lib winmm.lib\""
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "MinGW build",
+            "type": "shell",
+            "command": "cmd.exe",
+            "args": [
+                "/c",
+                "\"cd /d ${workspaceFolder}\\\\src && windres resources.rc resources.o && g++ -O2 -std=c++17 -o ${workspaceFolder}\\\\bin\\\\AutoClicker.exe main.cpp resources.o -static -lgdi32 -luser32 -lshell32 -lcomdlg32 -ladvapi32 -lwinmm -mwindows\""
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": "$gcc",
+            "group": "build"
+        },
+        {
+            "label": "Run build.bat",
+            "type": "shell",
+            "command": "${workspaceFolder}\\src\\build.bat",
+            "options": {
+                "cwd": "${workspaceFolder}\\src"
+            },
+            "problemMatcher": [],
+            "group": "build"
+        }
+    ]
+}

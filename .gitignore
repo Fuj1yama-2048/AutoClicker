@@ -1,0 +1,5 @@
+bin/AutoClicker.exe
+src/*.obj
+src/*.res
+src/*.o
+.claude/
