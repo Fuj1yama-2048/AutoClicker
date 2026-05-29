@@ -18,52 +18,73 @@
 #pragma comment(lib, "comdlg32.lib")
 #pragma comment(lib, "advapi32.lib")
 #pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "ole32.lib")
 #include <commdlg.h>
 #include <shellapi.h>
+#include <shlobj.h>
 #include <mmsystem.h>
 
 // ── 控件 ID ──────────────────────────────────────
-#define IDC_BTN_LEFT        1001
-#define IDC_BTN_RIGHT       1002
-#define IDC_BTN_MIDDLE      1003
-#define IDC_SINGLE          1004
-#define IDC_DOUBLE          1005
-#define IDC_EDIT_SEC        1006
-#define IDC_EDIT_MS         1007
-#define IDC_EDIT_US         1008
-#define IDC_REPEAT_FOREVER  1010
-#define IDC_REPEAT_COUNT    1011
-#define IDC_EDIT_COUNT      1012
-#define IDC_CURSOR_FOLLOW   1013
-#define IDC_CURSOR_FIXED    1014
-#define IDC_EDIT_X          1015
-#define IDC_EDIT_Y          1016
-#define IDC_BTN_START       1018
-#define IDC_BTN_STOP        1019
-#define IDC_COUNT_LABEL     1021
-#define IDC_STATUS_LABEL    1022
-#define IDC_CHECK_TOPMOST   1023
-#define IDC_BTN_RECORD      1024
-#define IDC_BTN_REPLAY      1025
-#define IDC_BTN_CLEAR_REC   1026
-#define IDC_LIST_RECORD     1027
-#define IDC_REPLAY_LOOP     1028
-#define IDC_EDIT_REPLAY_N   1029
-#define IDC_LABEL_RECORD    1030
-#define IDC_BTN_EXPORT      1031
-#define IDC_BTN_IMPORT      1032
-#define IDC_LIST_IMPORTED   1033
-#define IDC_CHECK_TRAJECTORY 1034
-#define IDC_CHECK_HIDE      1035
-#define IDC_COMBO_SAMPLE_RATE  1036
-#define IDC_COMBO_CLOSE_ACTION 1037
-#define IDC_CHECK_RAND_DELAY   1038
-#define IDC_CHECK_RAND_POS     1039
-#define IDC_CHECK_RECORD_SELF  1040
-#define IDC_BTN_PICK_POS      1041
-#define IDC_TIMER              1
-#define IDC_REPLAY_TIMER       2
-#define WM_TRAYICON            (WM_APP + 1)
+#define IDC_BTN_LEFT              1001  // 鼠标左键
+#define IDC_BTN_RIGHT             1002  // 鼠标右键
+#define IDC_BTN_MIDDLE            1003  // 鼠标中键
+#define IDC_SINGLE                1004  // 单击模式
+#define IDC_DOUBLE                1005  // 双击模式
+#define IDC_EDIT_SEC              1006  // 间隔秒数输入
+#define IDC_EDIT_MS               1007  // 间隔毫秒输入
+#define IDC_EDIT_US               1008  // 间隔微秒输入
+#define IDC_REPEAT_FOREVER        1010  // 直到停止
+#define IDC_REPEAT_COUNT          1011  // 指定次数
+#define IDC_EDIT_COUNT            1012  // 次数输入
+#define IDC_CURSOR_FOLLOW         1013  // 跟随光标
+#define IDC_CURSOR_FIXED          1014  // 固定位置
+#define IDC_EDIT_X                1015  // 固定X坐标
+#define IDC_EDIT_Y                1016  // 固定Y坐标
+#define IDC_BTN_START             1018  // 开始按钮
+#define IDC_BTN_STOP              1019  // 停止按钮
+#define IDC_COUNT_LABEL           1021  // 点击计数标签
+#define IDC_STATUS_LABEL          1022  // 状态标签
+#define IDC_CHECK_TOPMOST         1023  // 置顶
+#define IDC_BTN_RECORD            1024  // 录制按钮
+#define IDC_BTN_REPLAY            1025  // 回放按钮
+#define IDC_BTN_CLEAR_REC         1026  // 清空录制
+#define IDC_LIST_RECORD           1027  // 动作列表
+#define IDC_REPLAY_LOOP           1028  // 循环播放
+#define IDC_EDIT_REPLAY_N         1029  // 播放次数
+#define IDC_LABEL_RECORD          1030  // 当前动作数标签
+#define IDC_BTN_EXPORT            1031  // 导出按钮
+#define IDC_BTN_IMPORT            1032  // 导入按钮
+#define IDC_LIST_IMPORTED         1033  // 已导入文件列表
+#define IDC_CHECK_TRAJECTORY      1034  // 记录轨迹
+#define IDC_CHECK_HIDE            1035  // 开始时隐藏
+#define IDC_COMBO_SAMPLE_RATE     1036  // 采样率
+#define IDC_COMBO_CLOSE_ACTION    1037  // 关闭行为
+#define IDC_CHECK_RAND_DELAY      1038  // 随机间隔
+#define IDC_CHECK_RAND_POS        1039  // 位置微抖
+#define IDC_CHECK_RECORD_SELF     1040  // 录制自窗口光标
+#define IDC_BTN_PICK_POS          1041  // 取点按钮
+#define IDC_BTN_SETTINGS          1042  // 齿轮设置按钮
+#define IDC_SETTINGS_OK           1043  // 设置确定按钮
+#define IDC_BTN_HK_START          1044  // 热键显示-开始
+#define IDC_BTN_HK_RECORD         1045  // 热键显示-录制
+#define IDC_BTN_HK_REPLAY         1046  // 热键显示-回放
+#define IDC_HOTKEY_LABEL          1047  // 底部热键标签
+#define IDC_EDIT_DEFAULT_PATH     1048  // 默认文件路径
+#define IDC_BTN_BROWSE_PATH       1049  // 浏览文件夹按钮
+#define IDC_TIMER                    1  // 连点定时器
+#define IDC_REPLAY_TIMER             2  // 回放定时器
+#define WM_TRAYICON          (WM_APP + 1) // 托盘消息
+
+// ── 窗口大小 ──────────────────────────────────────
+#define MAIN_HEIGHT 730
+#define MAIN_WIDTH  465
+
+#define SET_HEIGHT  550
+#define SET_WIDTH   380
+
+
+// ── 版本号 ──────────────────────────────────────
+#define VERSION_NUMBER  L"1.1.1"
 
 // ── 录制数据结构 ─────────────────────────────────
 struct RecordedAction {
@@ -111,7 +132,7 @@ struct AppState {
     bool followCursor = true;
     int  fixedX = 0;
     int  fixedY = 0;
-    bool topmost = false; // 置顶行为
+    bool topmost = true; // 置顶行为
     bool pickingPosition = false;  // 正在等待用户点击屏幕选取位置
 
     // 运行时
@@ -173,7 +194,23 @@ struct AppState {
 
     // 防止录制回调里触发 replay/click 被录进去
     bool ignoreNextDown = false;
+    bool settingRadio = false;   // 抑制 CheckRadioButton 的异步通知
+
+    // 自定义热键
+    UINT hotkeyStart  = VK_F6;   UINT hkModStart  = 0;
+    UINT hotkeyRecord = VK_F7;   UINT hkModRecord = 0;
+    UINT hotkeyReplay = VK_F8;   UINT hkModReplay = 0;
+
+    // 设置窗口
+    HWND hwndSettings = nullptr;
+    bool capturingHotkey = false;
+    int  capturingWhich = 0;  // 1=开始, 2=录制, 3=回放
+
+    // 导入导出默认路径
+    std::wstring defaultFilePath;
 } g;
+
+HHOOK g_pickHook = nullptr;
 
 // ── 辅助函数 ─────────────────────────────────────
 int RandomRange(int lo, int hi) {
@@ -241,20 +278,41 @@ void SimulateClick(int button, int mode, POINT pt) {
     GetMouseFlags(button, down, up);
     if (!down) return;
 
-    SetCursorPos(pt.x, pt.y);
-    Sleep(3);
+    int sw = GetSystemMetrics(SM_CXSCREEN);
+    int sh = GetSystemMetrics(SM_CYSCREEN);
+    LONG dx = (LONG)((pt.x * 65536LL) / sw);
+    LONG dy = (LONG)((pt.y * 65536LL) / sh);
 
-    INPUT in = {};
-    in.type = INPUT_MOUSE;
-    int times = (mode == 0) ? 1 : 2;
-
-    for (int t = 0; t < times; t++) {
-        in.mi.dwFlags = down;
-        SendInput(1, &in, sizeof(INPUT));
-        Sleep(10);
-        in.mi.dwFlags = up;
-        SendInput(1, &in, sizeof(INPUT));
-        if (t < times - 1) Sleep(30); // 双击间隔
+    // 移动+按下+释放 放入一次 SendInput 调用，保证不会和用户物理鼠标输入交叉
+    if (mode == 0) { // 单击
+        SetCursorPos(pt.x, pt.y);
+        INPUT in[3] = {};
+        in[0].type = INPUT_MOUSE;
+        in[0].mi.dx = dx; in[0].mi.dy = dy;
+        in[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
+        in[1].type = INPUT_MOUSE;
+        in[1].mi.dwFlags = down;
+        in[2].type = INPUT_MOUSE;
+        in[2].mi.dwFlags = up;
+        SendInput(3, in, sizeof(INPUT));
+    } else { // 双击
+        SetCursorPos(pt.x, pt.y);
+        INPUT in[5] = {};
+        in[0].type = INPUT_MOUSE;
+        in[0].mi.dx = dx; in[0].mi.dy = dy;
+        in[0].mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
+        in[1].type = INPUT_MOUSE;
+        in[1].mi.dwFlags = down;
+        in[2].type = INPUT_MOUSE;
+        in[2].mi.dwFlags = up;
+        // 双击的两击之间 Windows 需要约 30ms 间隔来识别为双击
+        SendInput(3, in, sizeof(INPUT));
+        Sleep(30);
+        in[3].type = INPUT_MOUSE;
+        in[3].mi.dwFlags = down;
+        in[4].type = INPUT_MOUSE;
+        in[4].mi.dwFlags = up;
+        SendInput(2, &in[3], sizeof(INPUT));
     }
 }
 
@@ -263,30 +321,30 @@ void SimulateDrag(int button, POINT from, POINT to, DWORD holdMs) {
     GetMouseFlags(button, down, up);
     if (!down) return;
 
+    int sw = GetSystemMetrics(SM_CXSCREEN);
+    int sh = GetSystemMetrics(SM_CYSCREEN);
+
     INPUT in = {};
     in.type = INPUT_MOUSE;
 
-    // 1) 移动到起点
     SetCursorPos(from.x, from.y);
-    Sleep(5);
-
-    // 2) 按下
-    in.mi.dwFlags = down;
+    LONG dx = (LONG)((from.x * 65536LL) / sw);
+    LONG dy = (LONG)((from.y * 65536LL) / sh);
+    in.mi.dx = dx; in.mi.dy = dy;
+    in.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE | down;
     SendInput(1, &in, sizeof(INPUT));
-    Sleep(20); // 让目标程序感知到按下
+    Sleep(20);
 
-    // 3) 移动到终点 (拖动)
     SetCursorPos(to.x, to.y);
-    in.mi.dwFlags = MOUSEEVENTF_MOVE;
+    dx = (LONG)((to.x * 65536LL) / sw);
+    dy = (LONG)((to.y * 65536LL) / sh);
+    in.mi.dx = dx; in.mi.dy = dy;
+    in.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
     SendInput(1, &in, sizeof(INPUT));
 
-    // 4) 按住等待
-    DWORD elapsed = 25; // 已用约25ms
-    if (holdMs > elapsed) {
-        Sleep(holdMs - elapsed);
-    }
+    DWORD elapsed = 20;
+    if (holdMs > elapsed) Sleep(holdMs - elapsed);
 
-    // 5) 松手
     in.mi.dwFlags = up;
     SendInput(1, &in, sizeof(INPUT));
     Sleep(10);
@@ -297,18 +355,21 @@ void SimulateTrajectoryDrag(const RecordedAction& a) {
     GetMouseFlags(a.button, down, up);
     if (!down) return;
 
+    int sw = GetSystemMetrics(SM_CXSCREEN);
+    int sh = GetSystemMetrics(SM_CYSCREEN);
+
     INPUT in = {};
     in.type = INPUT_MOUSE;
 
-    // 1) 移动到起点 + 按下
     SetCursorPos(a.pt.x, a.pt.y);
-    Sleep(5);
-    in.mi.dwFlags = down;
+    LONG dx = (LONG)((a.pt.x * 65536LL) / sw);
+    LONG dy = (LONG)((a.pt.y * 65536LL) / sh);
+    in.mi.dx = dx; in.mi.dy = dy;
+    in.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE | down;
     SendInput(1, &in, sizeof(INPUT));
-    Sleep(15); // 让目标程序感知到按下
+    Sleep(15);
 
-    // 2) 逐点回放轨迹
-    int nPts = (int)a.trajectory.size() + 1; // +1 for endPt
+    int nPts = (int)a.trajectory.size() + 1;
     DWORD interval = a.holdMs / (nPts > 0 ? nPts : 1);
     if (interval < 3) interval = 3;
     if (interval > 50) interval = 50;
@@ -316,18 +377,22 @@ void SimulateTrajectoryDrag(const RecordedAction& a) {
     for (auto& pt : a.trajectory) {
         Sleep(interval);
         SetCursorPos(pt.x, pt.y);
-        in.mi.dwFlags = MOUSEEVENTF_MOVE;
+        dx = (LONG)((pt.x * 65536LL) / sw);
+        dy = (LONG)((pt.y * 65536LL) / sh);
+        in.mi.dx = dx; in.mi.dy = dy;
+        in.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
         SendInput(1, &in, sizeof(INPUT));
     }
 
-    // 3) 移到终点
     Sleep(interval);
     SetCursorPos(a.endPt.x, a.endPt.y);
-    in.mi.dwFlags = MOUSEEVENTF_MOVE;
+    dx = (LONG)((a.endPt.x * 65536LL) / sw);
+    dy = (LONG)((a.endPt.y * 65536LL) / sh);
+    in.mi.dx = dx; in.mi.dy = dy;
+    in.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
     SendInput(1, &in, sizeof(INPUT));
     Sleep(10);
 
-    // 4) 松手
     in.mi.dwFlags = up;
     SendInput(1, &in, sizeof(INPUT));
     Sleep(10);
@@ -343,23 +408,71 @@ void SimulateAction(const RecordedAction& a) {
     }
 }
 
+// 诊断: 记录最近一次点击的模式和坐标, UI中显示
+int  g_lastClickMode = -1;   // -1=未点击, 0=跟随, 1=固定
+POINT g_lastClickPt = {0, 0};
+
+// 固定位置专用: 通过 PostMessage 直接把鼠标消息投递到目标窗口。
+// 完全不移动光标，从根源上避免和用户物理鼠标争抢同一光标资源。
+void ClickAtFixedPos(POINT pt, int button, int mode) {
+    HWND hTarget = WindowFromPoint(pt);
+    if (!hTarget) return;
+
+    POINT cp = pt;
+    ScreenToClient(hTarget, &cp);
+
+    UINT downMsg, upMsg;
+    WPARAM wpDown;
+    switch (button) {
+        case 0:
+            downMsg = WM_LBUTTONDOWN; upMsg = WM_LBUTTONUP;
+            wpDown = MK_LBUTTON; break;
+        case 1:
+            downMsg = WM_RBUTTONDOWN; upMsg = WM_RBUTTONUP;
+            wpDown = MK_RBUTTON; break;
+        case 2:
+            downMsg = WM_MBUTTONDOWN; upMsg = WM_MBUTTONUP;
+            wpDown = MK_MBUTTON; break;
+        default: return;
+    }
+
+    LPARAM lp = MAKELPARAM(cp.x, cp.y);
+    int times = (mode == 0) ? 1 : 2;
+    for (int t = 0; t < times; t++) {
+        PostMessage(hTarget, downMsg, wpDown, lp);
+        PostMessage(hTarget, upMsg, 0, lp);
+        if (t < times - 1) Sleep(30);
+    }
+}
+
 void DoClick() {
     POINT pt;
-    if (!g.followCursor) {
+    bool isFixed = (IsDlgButtonChecked(g.hwnd, IDC_CURSOR_FIXED) == BST_CHECKED);
+    if (isFixed) {
         pt.x = g.fixedX;
         pt.y = g.fixedY;
     } else {
         GetCursorPos(&pt);
     }
+    g_lastClickMode = isFixed ? 1 : 0;
+    g_lastClickPt = pt;
     if (g.randomizePosition) {
         pt.x += RandomRange(-4, 4);
         pt.y += RandomRange(-4, 4);
     }
-    SimulateClick(g.mouseButton, g.clickMode, pt);
+    if (isFixed) {
+        ClickAtFixedPos(pt, g.mouseButton, g.clickMode);
+    } else {
+        SimulateClick(g.mouseButton, g.clickMode, pt);
+        if (g.randomizePosition) SetCursorPos(g_lastClickPt.x, g_lastClickPt.y);
+    }
 }
 
 // ── 录制 ────────────────────────────────────────
-void StopReplay(HWND hwnd); // 前置声明
+void StopReplay(HWND hwnd);   // 前置声明
+void StopClicking(HWND hwnd); // 前置声明
+void UpdateUI(HWND hwnd);     // 前置声明
+std::wstring HotkeyToString(UINT vk, UINT mod);
 void RefreshRecordList(HWND hwnd) {
     SendMessage(g.hList, LB_RESETCONTENT, 0, 0);
     for (size_t i = 0; i < g.actions.size(); i++) {
@@ -410,12 +523,16 @@ void RefreshImportedList(HWND hwnd) {
 
 void StartRecording(HWND hwnd) {
     if (g.isRecording) return;
+    if (g.running) StopClicking(hwnd);
+    if (g.isReplaying) StopReplay(hwnd);
     g.actions.clear();
     g.selectedImport = -1;
     g.timeline.clear();
     g.lastTimelineUs = 0;
     g.lastRecordTick = GetTickCount();
+    g.recordTrajectory = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_TRAJECTORY), BM_GETCHECK, 0, 0) == BST_CHECKED);
     g.isRecording = true;
+    UpdateUI(hwnd);
     if (g.hideOnAction) ShowWindow(hwnd, SW_MINIMIZE);
 
     // 缓存窗口矩形, 用于快速判断鼠标是否在自家窗口上 (避免 WM_MOUSEMOVE 热路径调 WindowFromPoint)
@@ -565,7 +682,9 @@ void StopRecording(HWND hwnd) {
         g.mouseHook = nullptr;
     }
     g.isRecording = false;
-    SetDlgItemText(hwnd, IDC_BTN_RECORD, L"● 录制");
+    UpdateUI(hwnd);
+    std::wstring recText = L"● 录制(" + HotkeyToString(g.hotkeyRecord, g.hkModRecord) + L")";
+    SetDlgItemText(hwnd, IDC_BTN_RECORD, recText.c_str());
     RefreshRecordList(hwnd);
 }
 
@@ -594,6 +713,8 @@ void ExportRecording(HWND hwnd) {
     ofn.nMaxFile = MAX_PATH;
     ofn.lpstrDefExt = L"acr";
     ofn.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST;
+    if (!g.defaultFilePath.empty())
+        ofn.lpstrInitialDir = g.defaultFilePath.c_str();
 
     if (!GetSaveFileName(&ofn)) return;
 
@@ -667,6 +788,8 @@ void ImportRecording(HWND hwnd) {
     ofn.nMaxFile = MAX_PATH;
     ofn.lpstrDefExt = L"acr";
     ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+    if (!g.defaultFilePath.empty())
+        ofn.lpstrInitialDir = g.defaultFilePath.c_str();
 
     if (!GetOpenFileName(&ofn)) return;
 
@@ -841,37 +964,49 @@ void CALLBACK ReplayTimerProc(UINT uID, UINT, DWORD_PTR, DWORD_PTR, DWORD_PTR) {
 
     DWORD64 elapsedUs = GetTimeUs() - g.replayBaseUs;
 
-    // 处理所有 accumulate delta ≤ elapsed 的事件
     while (g.timelineReplayIdx < g.timeline.size()) {
         if (g.replayAccumUs + g.timeline[g.timelineReplayIdx].deltaUs > elapsedUs)
-            break;  // 还没到时间
+            break;
 
         auto& tp = g.timeline[g.timelineReplayIdx];
         g.replayAccumUs += tp.deltaUs;
 
-        SetCursorPos(tp.pt.x, tp.pt.y);
+        {
+            int sw = GetSystemMetrics(SM_CXSCREEN);
+            int sh = GetSystemMetrics(SM_CYSCREEN);
+            LONG dx = (LONG)((tp.pt.x * 65536LL) / sw);
+            LONG dy = (LONG)((tp.pt.y * 65536LL) / sh);
 
-        if (tp.event == -1) {
-            UINT down, up;
-            GetMouseFlags(tp.button, down, up);
-            if (down) {
+            SetCursorPos(tp.pt.x, tp.pt.y);
+            if (tp.event == -1) {
+                UINT down, up;
+                GetMouseFlags(tp.button, down, up);
+                if (down) {
+                    INPUT in = {};
+                    in.type = INPUT_MOUSE;
+                    in.mi.dx = dx; in.mi.dy = dy;
+                    in.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE | down;
+                    SendInput(1, &in, sizeof(INPUT));
+                }
+            } else if (tp.event == -2) {
+                UINT down, up;
+                GetMouseFlags(tp.button, down, up);
+                if (up) {
+                    INPUT in = {};
+                    in.type = INPUT_MOUSE;
+                    in.mi.dx = dx; in.mi.dy = dy;
+                    in.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE | up;
+                    SendInput(1, &in, sizeof(INPUT));
+                }
+            } else {
                 INPUT in = {};
                 in.type = INPUT_MOUSE;
-                in.mi.dwFlags = down;
-                SendInput(1, &in, sizeof(INPUT));
-            }
-        } else if (tp.event == -2) {
-            UINT down, up;
-            GetMouseFlags(tp.button, down, up);
-            if (up) {
-                INPUT in = {};
-                in.type = INPUT_MOUSE;
-                in.mi.dwFlags = up;
+                in.mi.dx = dx; in.mi.dy = dy;
+                in.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
                 SendInput(1, &in, sizeof(INPUT));
             }
         }
 
-        g.clickCount++;
         g.timelineReplayIdx++;
     }
 
@@ -885,7 +1020,6 @@ void CALLBACK ReplayTimerProc(UINT uID, UINT, DWORD_PTR, DWORD_PTR, DWORD_PTR) {
             PostMessage(g.hwnd, WM_APP + 2, 0, 0);
             return;
         }
-        // 下一轮循环
         g.timelineReplayIdx = 0;
         g.replayAccumUs = 0;
         g.replayBaseUs = GetTimeUs();
@@ -894,7 +1028,8 @@ void CALLBACK ReplayTimerProc(UINT uID, UINT, DWORD_PTR, DWORD_PTR, DWORD_PTR) {
 
 void StartReplay(HWND hwnd) {
     if (g.isReplaying) return;
-    if (g.running) return;
+    if (g.running) StopClicking(hwnd);
+    if (g.isRecording) StopRecording(hwnd);
     if (g.actions.empty() && g.timeline.empty()) return;
 
     wchar_t buf[16];
@@ -905,6 +1040,7 @@ void StartReplay(HWND hwnd) {
     g.replayLoop = (SendMessage(GetDlgItem(hwnd, IDC_REPLAY_LOOP), BM_GETCHECK, 0, 0) == BST_CHECKED);
     g.currentReplay = 0;
     g.isReplaying = true;
+    UpdateUI(hwnd);
     g.clickCount = 0;
 
     g.replayingTimeline = !g.timeline.empty();
@@ -937,9 +1073,29 @@ void StopReplay(HWND hwnd) {
     KillTimer(hwnd, IDC_REPLAY_TIMER);
     g.isReplaying = false;
     g.replayingTimeline = false;
-    SetDlgItemText(hwnd, IDC_BTN_REPLAY, L"▶ 播放(F8)");
+    UpdateUI(hwnd);
+    std::wstring repText = L"▶ 播放(" + HotkeyToString(g.hotkeyReplay, g.hkModReplay) + L")";
+    SetDlgItemText(hwnd, IDC_BTN_REPLAY, repText.c_str());
     EnableWindow(GetDlgItem(hwnd, IDC_BTN_START), TRUE);
     EnableWindow(GetDlgItem(hwnd, IDC_BTN_RECORD), TRUE);
+}
+
+void UpdateHotkeyLabel(HWND hwnd) {
+    std::wstring s = L"热键:  ";
+    s += HotkeyToString(g.hotkeyStart, g.hkModStart) + L" 开始    ";
+    s += HotkeyToString(g.hotkeyRecord, g.hkModRecord) + L" 录制    ";
+    s += HotkeyToString(g.hotkeyReplay, g.hkModReplay) + L" 播放";
+    SetDlgItemText(hwnd, IDC_HOTKEY_LABEL, s.c_str());
+
+    std::wstring btnStart = L"▶  开始 (";
+    btnStart += HotkeyToString(g.hotkeyStart, g.hkModStart) + L")";
+    SetDlgItemText(hwnd, IDC_BTN_START, btnStart.c_str());
+
+    std::wstring btnRec = L"● 录制(" + HotkeyToString(g.hotkeyRecord, g.hkModRecord) + L")";
+    SetDlgItemText(hwnd, IDC_BTN_RECORD, btnRec.c_str());
+
+    std::wstring btnRep = L"▶ 播放(" + HotkeyToString(g.hotkeyReplay, g.hkModReplay) + L")";
+    SetDlgItemText(hwnd, IDC_BTN_REPLAY, btnRep.c_str());
 }
 
 // ── UI 更新 ─────────────────────────────────────
@@ -961,14 +1117,58 @@ void UpdateUI(HWND hwnd) {
     EnableWindow(GetDlgItem(hwnd, IDC_BTN_START), !g.running && !g.isReplaying);
     EnableWindow(GetDlgItem(hwnd, IDC_BTN_STOP), g.running);
 
-    BOOL fixed = !g.followCursor;
+    BOOL fixed = (IsDlgButtonChecked(hwnd, IDC_CURSOR_FIXED) == BST_CHECKED);
+    g.followCursor = !fixed;
     EnableWindow(GetDlgItem(hwnd, IDC_EDIT_X), fixed);
     EnableWindow(GetDlgItem(hwnd, IDC_EDIT_Y), fixed);
     EnableWindow(GetDlgItem(hwnd, IDC_EDIT_COUNT), !g.repeatForever);
 }
 
+// 取点用低级鼠标钩子 — 拦截点击, 不穿透到目标窗口
+LRESULT CALLBACK PickMouseProc(int nCode, WPARAM wParam, LPARAM lParam) {
+    if (nCode >= 0 && g.pickingPosition) {
+        if (wParam == WM_LBUTTONDOWN) {
+            MSLLHOOKSTRUCT* info = (MSLLHOOKSTRUCT*)lParam;
+            HWND hTarget = WindowFromPoint(info->pt);
+            if (hTarget == g.hwnd || IsChild(g.hwnd, hTarget)) {
+                // 点到了自家窗口 → 取消取点, 放行点击
+                g.pickingPosition = false;
+                if (g_pickHook) { UnhookWindowsHookEx(g_pickHook); g_pickHook = nullptr; }
+                SetCursor(LoadCursor(nullptr, IDC_ARROW));
+                SetDlgItemText(g.hwnd, IDC_BTN_PICK_POS, L"📌");
+                return CallNextHookEx(nullptr, nCode, wParam, lParam);  // 放行
+            }
+            // 点外部窗口 → 抓取坐标, 吞掉点击
+            g.fixedX = info->pt.x; g.fixedY = info->pt.y;
+            wchar_t buf[16];
+            _itow_s(g.fixedX, buf, 10); SetDlgItemText(g.hwnd, IDC_EDIT_X, buf);
+            _itow_s(g.fixedY, buf, 10); SetDlgItemText(g.hwnd, IDC_EDIT_Y, buf);
+            g.pickingPosition = false;
+            if (g_pickHook) { UnhookWindowsHookEx(g_pickHook); g_pickHook = nullptr; }
+            SetCursor(LoadCursor(nullptr, IDC_ARROW));
+            SetDlgItemText(g.hwnd, IDC_BTN_PICK_POS, L"📌");
+            g.settingRadio = true;
+            g.followCursor = false;
+            CheckRadioButton(g.hwnd, IDC_CURSOR_FOLLOW, IDC_CURSOR_FIXED, IDC_CURSOR_FIXED);
+            g.settingRadio = false;
+            UpdateUI(g.hwnd);
+            return 1;  // 吞掉点击, 不传递到目标窗口
+        }
+        if (wParam == WM_RBUTTONDOWN) {
+            g.pickingPosition = false;
+            if (g_pickHook) { UnhookWindowsHookEx(g_pickHook); g_pickHook = nullptr; }
+            SetCursor(LoadCursor(nullptr, IDC_ARROW));
+            SetDlgItemText(g.hwnd, IDC_BTN_PICK_POS, L"📌");
+            return 1;
+        }
+    }
+    return CallNextHookEx(nullptr, nCode, wParam, lParam);
+}
+
 void StartClicking(HWND hwnd) {
-    if (g.running || g.isReplaying) return;
+    if (g.running) return;
+    if (g.isReplaying) StopReplay(hwnd);
+    if (g.isRecording) StopRecording(hwnd);
 
     ReadInterval(hwnd);
 
@@ -979,7 +1179,7 @@ void StartClicking(HWND hwnd) {
         if (g.targetCount <= 0) g.targetCount = 100;
     }
 
-    if (!g.followCursor) {
+    if (IsDlgButtonChecked(hwnd, IDC_CURSOR_FIXED) == BST_CHECKED) {
         wchar_t buf[16];
         GetDlgItemText(hwnd, IDC_EDIT_X, buf, 16); g.fixedX = _wtoi(buf);
         GetDlgItemText(hwnd, IDC_EDIT_Y, buf, 16); g.fixedY = _wtoi(buf);
@@ -1010,25 +1210,29 @@ void ToggleTopmost(HWND hwnd) {
 }
 
 // ── 控件创建辅助 ────────────────────────────────
+// 静态文本 — 无 ID，不需要响应交互
 HWND CreateLabel(HWND p, const wchar_t* t, int x, int y, int w, int h) {
     return CreateWindow(L"STATIC", t, WS_CHILD | WS_VISIBLE, x, y, w, h,
                         p, nullptr, GetModuleHandle(nullptr), nullptr);
 }
 
-HWND CreateRadio(HWND p, const wchar_t* t, int x, int y, int w, int h, int id, bool chk) {
+// 单选按钮 — groupStart 标记一组单选按钮的起始
+HWND CreateRadio(HWND p, const wchar_t* t, int x, int y, int w, int h, int id, bool chk, bool groupStart = false) {
     HWND c = CreateWindow(L"BUTTON", t,
-                          WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | (chk ? WS_TABSTOP : 0),
+                          WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | (chk ? WS_TABSTOP : 0) | (groupStart ? WS_GROUP : 0),
                           x, y, w, h, p, (HMENU)(INT_PTR)id, GetModuleHandle(nullptr), nullptr);
     if (chk) SendMessage(c, BM_SETCHECK, BST_CHECKED, 0);
     return c;
 }
 
+// 编辑框 — 数字输入专用 (ES_NUMBER | ES_RIGHT)
 HWND CreateEdit(HWND p, const wchar_t* t, int x, int y, int w, int h, int id) {
     return CreateWindow(L"EDIT", t,
                         WS_CHILD | WS_VISIBLE | WS_BORDER | ES_NUMBER | ES_RIGHT | WS_TABSTOP,
                         x, y, w, h, p, (HMENU)(INT_PTR)id, GetModuleHandle(nullptr), nullptr);
 }
 
+// 复选框 — chk=true 则初始选中
 HWND CreateCheck(HWND p, const wchar_t* t, int x, int y, int w, int h, int id, bool chk) {
     HWND c = CreateWindow(L"BUTTON", t,
                           WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | WS_TABSTOP,
@@ -1037,33 +1241,156 @@ HWND CreateCheck(HWND p, const wchar_t* t, int x, int y, int w, int h, int id, b
     return c;
 }
 
+// 下拉框 — 只读选择列表 (CBS_DROPDOWNLIST)
 HWND CreateCombo(HWND p, int x, int y, int w, int h, int id) {
     return CreateWindow(L"COMBOBOX", nullptr,
                         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP,
                         x, y, w, h, p, (HMENU)(INT_PTR)id, GetModuleHandle(nullptr), nullptr);
 }
 
+// 普通按钮 — BS_PUSHBUTTON
 HWND CreateButton(HWND p, const wchar_t* t, int x, int y, int w, int h, int id) {
     return CreateWindow(L"BUTTON", t,
                         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_TABSTOP,
                         x, y, w, h, p, (HMENU)(INT_PTR)id, GetModuleHandle(nullptr), nullptr);
 }
 
+// 只读展示框 — 居中文本，不可编辑不可选中 (STATIC + SS_CENTER + SS_SUNKEN)
+HWND CreateDisplay(HWND p, const wchar_t* t, int x, int y, int w, int h, int id) {
+    return CreateWindow(L"STATIC", t,
+                        WS_CHILD | WS_VISIBLE | SS_CENTER | SS_SUNKEN,
+                        x, y, w, h, p, (HMENU)(INT_PTR)id, GetModuleHandle(nullptr), nullptr);
+}
+
+// 水平分隔线 — SS_ETCHEDHORZ
 HWND CreateSep(HWND p, int x, int y, int w) {
     return CreateWindow(L"STATIC", L"", WS_CHILD | WS_VISIBLE | SS_ETCHEDHORZ,
                         x, y, w, 2, p, nullptr, GetModuleHandle(nullptr), nullptr);
 }
 
 // ── 托盘 & 注册表 ────────────────────────────────
-void SaveCloseAction() {
+void SaveAllSettings() {
     HKEY hKey;
     if (RegCreateKeyEx(HKEY_CURRENT_USER, L"Software\\AutoClicker",
                        0, nullptr, REG_OPTION_NON_VOLATILE,
                        KEY_WRITE, nullptr, &hKey, nullptr) == ERROR_SUCCESS) {
-        DWORD val = (DWORD)g.closeAction;
-        RegSetValueEx(hKey, L"CloseAction", 0, REG_DWORD, (BYTE*)&val, sizeof(val));
+        DWORD v;
+        v = g.closeAction;       RegSetValueEx(hKey, L"CloseAction", 0, REG_DWORD, (BYTE*)&v, sizeof(v));
+        v = g.topmost;           RegSetValueEx(hKey, L"Topmost", 0, REG_DWORD, (BYTE*)&v, sizeof(v));
+        v = g.randomizeInterval; RegSetValueEx(hKey, L"RandomizeInterval", 0, REG_DWORD, (BYTE*)&v, sizeof(v));
+        v = g.randomizePosition; RegSetValueEx(hKey, L"RandomizePosition", 0, REG_DWORD, (BYTE*)&v, sizeof(v));
+        v = g.sampleRateHz;      RegSetValueEx(hKey, L"SampleRateHz", 0, REG_DWORD, (BYTE*)&v, sizeof(v));
+        v = g.hideOnAction;      RegSetValueEx(hKey, L"HideOnAction", 0, REG_DWORD, (BYTE*)&v, sizeof(v));
+        v = g.recordSelfWin;     RegSetValueEx(hKey, L"RecordSelfWin", 0, REG_DWORD, (BYTE*)&v, sizeof(v));
+        v = g.hotkeyStart;       RegSetValueEx(hKey, L"HotkeyStartVK", 0, REG_DWORD, (BYTE*)&v, 4);
+        v = g.hkModStart;        RegSetValueEx(hKey, L"HotkeyStartMod",0, REG_DWORD, (BYTE*)&v, 4);
+        v = g.hotkeyRecord;      RegSetValueEx(hKey, L"HotkeyRecordVK",0, REG_DWORD, (BYTE*)&v, 4);
+        v = g.hkModRecord;       RegSetValueEx(hKey, L"HotkeyRecordMod",0,REG_DWORD, (BYTE*)&v, 4);
+        v = g.hotkeyReplay;      RegSetValueEx(hKey, L"HotkeyReplayVK",0, REG_DWORD, (BYTE*)&v, 4);
+        v = g.hkModReplay;       RegSetValueEx(hKey, L"HotkeyReplayMod",0,REG_DWORD, (BYTE*)&v, 4);
+        RegSetValueEx(hKey, L"DefaultFilePath", 0, REG_SZ,
+                      (BYTE*)g.defaultFilePath.c_str(),
+                      (DWORD)((g.defaultFilePath.length() + 1) * sizeof(wchar_t)));
         RegCloseKey(hKey);
     }
+}
+
+// ── 热键序列化 ───────────────────────────────────
+std::wstring HotkeyToString(UINT vk, UINT mod) {
+    std::wstring s;
+    if (mod & MOD_CONTROL) s += L"Ctrl+";
+    if (mod & MOD_ALT)     s += L"Alt+";
+    if (mod & MOD_SHIFT)   s += L"Shift+";
+    if (mod & MOD_WIN)     s += L"Win+";
+
+    if (vk >= VK_F1 && vk <= VK_F24) {
+        s += L"F" + std::to_wstring(vk - VK_F1 + 1);
+    } else if (vk >= 'A' && vk <= 'Z') {
+        s += (wchar_t)vk;
+    } else if (vk >= '0' && vk <= '9') {
+        s += (wchar_t)vk;
+    } else if (vk == VK_SPACE) {
+        s += L"Space";
+    } else if (vk == VK_TAB) {
+        s += L"Tab";
+    } else {
+        wchar_t name[64] = {};
+        LONG scan = MapVirtualKey(vk, MAPVK_VK_TO_VSC) << 16;
+        if (vk == VK_INSERT || vk == VK_DELETE || vk == VK_HOME ||
+            vk == VK_END || vk == VK_PRIOR || vk == VK_NEXT ||
+            vk == VK_LEFT || vk == VK_RIGHT || vk == VK_UP || vk == VK_DOWN)
+            scan |= 1 << 24; // extended-key flag
+        if (GetKeyNameText(scan, name, 64))
+            s += name;
+        else
+            s += L"VK_" + std::to_wstring(vk);
+    }
+    return s;
+}
+
+void LoadAllSettings() {
+    HKEY hKey;
+    if (RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\AutoClicker", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+        DWORD v = 0, sz = sizeof(DWORD);
+
+        if (RegQueryValueEx(hKey, L"CloseAction", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS && v <= 2)
+            g.closeAction = (int)v;
+        sz = sizeof(v);
+        if (RegQueryValueEx(hKey, L"Topmost", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.topmost = (v != 0);
+        sz = sizeof(v);
+        if (RegQueryValueEx(hKey, L"RandomizeInterval", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.randomizeInterval = (v != 0);
+        sz = sizeof(v);
+        if (RegQueryValueEx(hKey, L"RandomizePosition", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.randomizePosition = (v != 0);
+        sz = sizeof(v);
+        if (RegQueryValueEx(hKey, L"SampleRateHz", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.sampleRateHz = (int)v;
+        sz = sizeof(v);
+        if (RegQueryValueEx(hKey, L"HideOnAction", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.hideOnAction = (v != 0);
+        sz = sizeof(v);
+        if (RegQueryValueEx(hKey, L"RecordSelfWin", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.recordSelfWin = (v != 0);
+
+        sz = sizeof(DWORD);
+        if (RegQueryValueEx(hKey, L"HotkeyStartVK", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.hotkeyStart = v;
+        sz = sizeof(DWORD);
+        if (RegQueryValueEx(hKey, L"HotkeyStartMod", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.hkModStart = v;
+        sz = sizeof(DWORD);
+        if (RegQueryValueEx(hKey, L"HotkeyRecordVK", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.hotkeyRecord = v;
+        sz = sizeof(DWORD);
+        if (RegQueryValueEx(hKey, L"HotkeyRecordMod", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.hkModRecord = v;
+        sz = sizeof(DWORD);
+        if (RegQueryValueEx(hKey, L"HotkeyReplayVK", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.hotkeyReplay = v;
+        sz = sizeof(DWORD);
+        if (RegQueryValueEx(hKey, L"HotkeyReplayMod", nullptr, nullptr, (LPBYTE)&v, &sz) == ERROR_SUCCESS)
+            g.hkModReplay = v;
+
+        DWORD pathSize = 0;
+        if (RegQueryValueEx(hKey, L"DefaultFilePath", nullptr, nullptr, nullptr, &pathSize) == ERROR_SUCCESS && pathSize > 0) {
+            std::vector<wchar_t> buf(pathSize / sizeof(wchar_t) + 1);
+            if (RegQueryValueEx(hKey, L"DefaultFilePath", nullptr, nullptr, (LPBYTE)buf.data(), &pathSize) == ERROR_SUCCESS)
+                g.defaultFilePath = buf.data();
+        }
+
+        RegCloseKey(hKey);
+    }
+}
+
+void ReregisterHotkeys(HWND hwnd) {
+    UnregisterHotKey(hwnd, 1);
+    UnregisterHotKey(hwnd, 2);
+    UnregisterHotKey(hwnd, 3);
+    RegisterHotKey(hwnd, 1, g.hkModStart,  g.hotkeyStart);
+    RegisterHotKey(hwnd, 2, g.hkModRecord, g.hotkeyRecord);
+    RegisterHotKey(hwnd, 3, g.hkModReplay, g.hotkeyReplay);
 }
 
 void CreateTrayIcon(HWND hwnd) {
@@ -1087,7 +1414,227 @@ void RemoveTrayIcon(HWND hwnd) {
     Shell_NotifyIcon(NIM_DELETE, &g.nid);
 }
 
-// ── 窗口过程 ─────────────────────────────────────
+// ── 设置窗口过程 ─────────────────────────────────
+LRESULT CALLBACK SettingsWndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
+    switch (msg) {
+    case WM_CREATE: {
+        HFONT hFont = CreateFont(16, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+                                  DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+                                  CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+                                  DEFAULT_PITCH | FF_DONTCARE,
+                                  L"Microsoft YaHei UI");
+
+        int y = 10;
+        // ── 通用 ──
+        CreateLabel(hwnd, L"── 通用 ──", 15, y, 120, 20); y += 28;
+        CreateCheck(hwnd, L"置顶", 15, y, 60, 24, IDC_CHECK_TOPMOST, g.topmost); y += 26;
+        CreateCheck(hwnd, L"随机间隔 ±20%", 15, y, 200, 24, IDC_CHECK_RAND_DELAY, g.randomizeInterval); y += 26;
+        CreateCheck(hwnd, L"位置微抖 ±4px", 15, y, 200, 24, IDC_CHECK_RAND_POS, g.randomizePosition); y += 32;
+        CreateLabel(hwnd, L"关闭行为:", 15, y, 80, 22);
+        HWND hCloseCombo = CreateCombo(hwnd, 65, y-2, 160, 200, IDC_COMBO_CLOSE_ACTION);
+        SendMessage(hCloseCombo, CB_ADDSTRING, 0, (LPARAM)L"询问");
+        SendMessage(hCloseCombo, CB_ADDSTRING, 0, (LPARAM)L"最小化到托盘");
+        SendMessage(hCloseCombo, CB_ADDSTRING, 0, (LPARAM)L"退出程序");
+        SendMessage(hCloseCombo, CB_SETCURSEL, g.closeAction, 0);
+        y += 34;
+
+        // ── 录制 ──
+        CreateLabel(hwnd, L"── 录制 ──", 15, y, 120, 20); y += 28;
+        CreateLabel(hwnd, L"采样率:", 15, y, 55, 22);
+        HWND hSampleCombo = CreateCombo(hwnd, 70, y-2, 90, 200, IDC_COMBO_SAMPLE_RATE);
+        const wchar_t* hzItems[] = {L"125 Hz", L"250 Hz", L"500 Hz", L"1K Hz", L"2K Hz", L"4K Hz", L"8K Hz"};
+        for (int i = 0; i < 7; i++) SendMessage(hSampleCombo, CB_ADDSTRING, 0, (LPARAM)hzItems[i]);
+        int hzVals[] = {125, 250, 500, 1000, 2000, 4000, 8000};
+        int sel = 3;
+        for (int i = 0; i < 7; i++) { if (g.sampleRateHz == hzVals[i]) sel = i; }
+        SendMessage(hSampleCombo, CB_SETCURSEL, sel, 0);
+        y += 28;
+        CreateCheck(hwnd, L"开始时隐藏", 15, y, 200, 24, IDC_CHECK_HIDE, g.hideOnAction); y += 26;
+        CreateCheck(hwnd, L"录制程序界面上的光标", 15, y, 250, 24, IDC_CHECK_RECORD_SELF, g.recordSelfWin); y += 32;
+
+        // ── 文件 ──
+        CreateLabel(hwnd, L"── 文件 ──", 15, y, 120, 20); y += 28;
+        CreateLabel(hwnd, L"默认路径:", 15, y, 80, 22);
+        CreateWindow(L"EDIT", g.defaultFilePath.c_str(),
+                     WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT | ES_AUTOHSCROLL | WS_TABSTOP,
+                     65, y-2, 220, 22,
+                     hwnd, (HMENU)(INT_PTR)IDC_EDIT_DEFAULT_PATH, GetModuleHandle(nullptr), nullptr);
+        CreateButton(hwnd, L"浏览...", 290, y-2, 60, 22, IDC_BTN_BROWSE_PATH);
+        y += 32;
+
+        // ── 热键 ──
+        int revampBut = 300; //    修改按钮的x位置
+        CreateLabel(hwnd, L"── 热键 ──", 15, y, 120, 20); y += 28;
+        CreateLabel(hwnd, L"开始/停止:", 15, y, 80, 24);
+        std::wstring hkStart = HotkeyToString(g.hotkeyStart, g.hkModStart);
+        CreateDisplay(hwnd, hkStart.c_str(), 100, y-2, 120, 26, IDC_BTN_HK_START);
+        CreateButton(hwnd, L"修改", revampBut, y-2, 50, 26, IDC_BTN_HK_START+10);
+        y += 30;
+        CreateLabel(hwnd, L"录制:", 15, y, 80, 24);
+        std::wstring hkRec = HotkeyToString(g.hotkeyRecord, g.hkModRecord);
+        CreateDisplay(hwnd, hkRec.c_str(), 100, y-2, 120, 26, IDC_BTN_HK_RECORD);
+        CreateButton(hwnd, L"修改", revampBut, y-2, 50, 26, IDC_BTN_HK_RECORD+10);
+        y += 30;
+        CreateLabel(hwnd, L"回放:", 15, y, 80, 24);
+        std::wstring hkRep = HotkeyToString(g.hotkeyReplay, g.hkModReplay);
+        CreateDisplay(hwnd, hkRep.c_str(), 100, y-2, 120, 26, IDC_BTN_HK_REPLAY);
+        CreateButton(hwnd, L"修改", revampBut, y-2, 50, 26, IDC_BTN_HK_REPLAY+10);
+        y += 40;
+
+        int btnW = 80;
+        CreateButton(hwnd, L"确定", (SET_WIDTH - btnW) / 2 - 10, y, btnW, 28, IDC_SETTINGS_OK);
+
+        // 设置字体
+        EnumChildWindows(hwnd, [](HWND child, LPARAM lp) -> BOOL {
+            SendMessage(child, WM_SETFONT, (WPARAM)lp, TRUE);
+            return TRUE;
+        }, (LPARAM)hFont);
+
+        return 0;
+    }
+
+    case WM_COMMAND: {
+        WORD id = LOWORD(wp);
+        switch (id) {
+        case IDC_CHECK_TOPMOST:
+            g.topmost = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_TOPMOST), BM_GETCHECK, 0, 0) == BST_CHECKED);
+            ToggleTopmost(g.hwnd);
+            return 0;
+        case IDC_CHECK_RAND_DELAY:
+            g.randomizeInterval = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_RAND_DELAY), BM_GETCHECK, 0, 0) == BST_CHECKED);
+            return 0;
+        case IDC_CHECK_RAND_POS:
+            g.randomizePosition = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_RAND_POS), BM_GETCHECK, 0, 0) == BST_CHECKED);
+            return 0;
+        case IDC_COMBO_CLOSE_ACTION:
+            if (HIWORD(wp) == CBN_SELCHANGE)
+                g.closeAction = (int)SendMessage(GetDlgItem(hwnd, IDC_COMBO_CLOSE_ACTION), CB_GETCURSEL, 0, 0);
+            return 0;
+        case IDC_COMBO_SAMPLE_RATE:
+            if (HIWORD(wp) == CBN_SELCHANGE) {
+                int hzArr[] = {125, 250, 500, 1000, 2000, 4000, 8000};
+                int idx = (int)SendMessage(GetDlgItem(hwnd, IDC_COMBO_SAMPLE_RATE), CB_GETCURSEL, 0, 0);
+                if (idx >= 0 && idx < 7) g.sampleRateHz = hzArr[idx];
+            }
+            return 0;
+        case IDC_CHECK_HIDE:
+            g.hideOnAction = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_HIDE), BM_GETCHECK, 0, 0) == BST_CHECKED);
+            return 0;
+        case IDC_CHECK_RECORD_SELF:
+            g.recordSelfWin = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_RECORD_SELF), BM_GETCHECK, 0, 0) == BST_CHECKED);
+            return 0;
+
+        case IDC_BTN_BROWSE_PATH: {
+            BROWSEINFO bi = {};
+            bi.hwndOwner = hwnd;
+            bi.lpszTitle = L"选择默认导入/导出文件夹";
+            bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
+            LPITEMIDLIST pidl = SHBrowseForFolder(&bi);
+            if (pidl) {
+                wchar_t path[MAX_PATH];
+                if (SHGetPathFromIDList(pidl, path)) {
+                    g.defaultFilePath = path;
+                    SetDlgItemText(hwnd, IDC_EDIT_DEFAULT_PATH, path);
+                }
+                CoTaskMemFree(pidl);
+            }
+            return 0;
+        }
+        case IDC_EDIT_DEFAULT_PATH:
+            if (HIWORD(wp) == EN_CHANGE) {
+                wchar_t buf[MAX_PATH];
+                GetDlgItemText(hwnd, IDC_EDIT_DEFAULT_PATH, buf, MAX_PATH);
+                g.defaultFilePath = buf;
+            }
+            return 0;
+
+        // 热键修改按钮
+        case IDC_BTN_HK_START+10:
+            g.capturingHotkey = true; g.capturingWhich = 1;
+            SetDlgItemText(hwnd, IDC_BTN_HK_START, L"...按任意键...");
+            SetFocus(hwnd);
+            return 0;
+        case IDC_BTN_HK_RECORD+10:
+            g.capturingHotkey = true; g.capturingWhich = 2;
+            SetDlgItemText(hwnd, IDC_BTN_HK_RECORD, L"...按任意键...");
+            SetFocus(hwnd);
+            return 0;
+        case IDC_BTN_HK_REPLAY+10:
+            g.capturingHotkey = true; g.capturingWhich = 3;
+            SetDlgItemText(hwnd, IDC_BTN_HK_REPLAY, L"...按任意键...");
+            SetFocus(hwnd);
+            return 0;
+
+        case IDC_SETTINGS_OK:
+            SaveAllSettings();
+            DestroyWindow(hwnd);
+            return 0;
+        }
+        return 0;
+    }
+
+    case WM_KEYDOWN:
+    case WM_SYSKEYDOWN:
+        if (g.capturingHotkey && g.capturingWhich > 0) {
+            UINT vk = (UINT)wp;
+            if (vk == VK_CONTROL || vk == VK_SHIFT || vk == VK_MENU || vk == VK_LWIN || vk == VK_RWIN)
+                return 0; // 等下一个非修饰键
+
+            UINT mod = 0;
+            if (GetAsyncKeyState(VK_CONTROL) & 0x8000) mod |= MOD_CONTROL;
+            if (GetAsyncKeyState(VK_SHIFT)   & 0x8000) mod |= MOD_SHIFT;
+            if (GetAsyncKeyState(VK_MENU)    & 0x8000) mod |= MOD_ALT;
+            if (GetAsyncKeyState(VK_LWIN)    & 0x8000) mod |= MOD_WIN;
+            if (GetAsyncKeyState(VK_RWIN)    & 0x8000) mod |= MOD_WIN;
+
+            std::wstring text = HotkeyToString(vk, mod);
+            switch (g.capturingWhich) {
+            case 1:
+                g.hotkeyStart = vk; g.hkModStart = mod;
+                SetDlgItemText(hwnd, IDC_BTN_HK_START, text.c_str());
+                break;
+            case 2:
+                g.hotkeyRecord = vk; g.hkModRecord = mod;
+                SetDlgItemText(hwnd, IDC_BTN_HK_RECORD, text.c_str());
+                break;
+            case 3:
+                g.hotkeyReplay = vk; g.hkModReplay = mod;
+                SetDlgItemText(hwnd, IDC_BTN_HK_REPLAY, text.c_str());
+                break;
+            }
+            g.capturingHotkey = false;
+            g.capturingWhich = 0;
+            return 0;
+        }
+        break;
+
+    case WM_CTLCOLORSTATIC: {
+        HDC hdc = (HDC)wp;
+        SetBkMode(hdc, TRANSPARENT);
+        static HBRUSH hBg = CreateSolidBrush(GetSysColor(COLOR_WINDOW));
+        return (LRESULT)hBg;
+    }
+
+    case WM_CLOSE:
+        SaveAllSettings();
+        DestroyWindow(hwnd);
+        return 0;
+
+    case WM_DESTROY:
+        SetForegroundWindow(g.hwnd);
+        ReregisterHotkeys(g.hwnd);
+        UpdateHotkeyLabel(g.hwnd);
+        g.hwndSettings = nullptr;
+        // 关闭设置窗口后刷新主窗口的标签
+        InvalidateRect(GetDlgItem(g.hwnd, IDC_COUNT_LABEL), nullptr, TRUE);
+        InvalidateRect(GetDlgItem(g.hwnd, IDC_HOTKEY_LABEL), nullptr, TRUE);
+        InvalidateRect(GetDlgItem(g.hwnd, IDC_STATUS_LABEL), nullptr, TRUE);
+        break;
+    }
+    return DefWindowProc(hwnd, msg, wp, lp);
+}
+
+// ── 主窗口过程 ─────────────────────────────────────
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     switch (msg) {
     case WM_CREATE: {
@@ -1101,13 +1648,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
         // ── 鼠标按钮 ──
         CreateLabel(hwnd, L"鼠标按钮:", 20, 16, 80, 22);
-        CreateRadio(hwnd, L"左键", 20, 42, 70, 22, IDC_BTN_LEFT, true);
+        CreateRadio(hwnd, L"左键", 20, 42, 70, 22, IDC_BTN_LEFT, true, true);
         CreateRadio(hwnd, L"右键", 110, 42, 70, 22, IDC_BTN_RIGHT, false);
         CreateRadio(hwnd, L"中键", 200, 42, 70, 22, IDC_BTN_MIDDLE, false);
 
         // ── 点击模式 ──
         CreateLabel(hwnd, L"点击模式:", 20, 78, 80, 22);
-        CreateRadio(hwnd, L"单击", 20, 104, 80, 22, IDC_SINGLE, true);
+        CreateRadio(hwnd, L"单击", 20, 104, 80, 22, IDC_SINGLE, true, true);
         CreateRadio(hwnd, L"双击", 120, 104, 80, 22, IDC_DOUBLE, false);
 
         CreateSep(hwnd, 20, 136, 410);
@@ -1117,15 +1664,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         CreateLabel(hwnd, L"秒", 20, 176, 20, 22);
         CreateEdit(hwnd, L"0", 40, 174, 50, 22, IDC_EDIT_SEC);
         CreateLabel(hwnd, L"毫秒", 102, 176, 35, 22);
-        CreateEdit(hwnd, L"100", 138, 174, 55, 22, IDC_EDIT_MS);
+        CreateEdit(hwnd, L"0", 138, 174, 55, 22, IDC_EDIT_MS);
         CreateLabel(hwnd, L"微秒", 205, 176, 35, 22);
-        CreateEdit(hwnd, L"0", 240, 174, 65, 22, IDC_EDIT_US);
+        CreateEdit(hwnd, L"10", 240, 174, 65, 22, IDC_EDIT_US);
 
         CreateSep(hwnd, 20, 208, 410);
 
         // ── 重复设置 ──
         CreateLabel(hwnd, L"重复模式:", 20, 218, 80, 22);
-        CreateRadio(hwnd, L"重复直到停止", 20, 244, 120, 22, IDC_REPEAT_FOREVER, true);
+        CreateRadio(hwnd, L"重复直到停止", 20, 244, 120, 22, IDC_REPEAT_FOREVER, true, true);
         CreateRadio(hwnd, L"指定次数", 155, 244, 90, 22, IDC_REPEAT_COUNT, false);
         CreateEdit(hwnd, L"100", 255, 244, 55, 22, IDC_EDIT_COUNT);
 
@@ -1133,7 +1680,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
         // ── 光标位置 ──
         CreateLabel(hwnd, L"光标位置:", 20, 286, 80, 22);
-        CreateRadio(hwnd, L"跟随鼠标", 20, 312, 100, 22, IDC_CURSOR_FOLLOW, true);
+        CreateRadio(hwnd, L"跟随鼠标", 20, 312, 100, 22, IDC_CURSOR_FOLLOW, true, true);
         CreateRadio(hwnd, L"固定位置", 130, 312, 100, 22, IDC_CURSOR_FIXED, false);
         CreateLabel(hwnd, L"X:", 240, 314, 18, 22);
         CreateEdit(hwnd, L"0", 258, 312, 55, 22, IDC_EDIT_X);
@@ -1143,94 +1690,70 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
         CreateSep(hwnd, 20, 344, 410);
 
-        // ── 选项 ──
-        CreateCheck(hwnd, L"置顶", 20, 354, 55, 24, IDC_CHECK_TOPMOST, g.topmost);
-        CreateCheck(hwnd, L"记录轨迹", 80, 354, 85, 24, IDC_CHECK_TRAJECTORY, true);
-        CreateLabel(hwnd, L"采样率:", 170, 356, 50, 20);
-        HWND hSampleCombo = CreateCombo(hwnd, 215, 353, 80, 200, IDC_COMBO_SAMPLE_RATE);
-        CreateCheck(hwnd, L"开始时隐藏", 305, 354, 105, 24, IDC_CHECK_HIDE, true);
-        CreateCheck(hwnd, L"录制程序界面上的光标", 20, 380, 200, 24, IDC_CHECK_RECORD_SELF, false);
-
-        CreateSep(hwnd, 20, 412, 410);
-
-        // ── 关闭行为 ──
-        CreateLabel(hwnd, L"关闭行为:", 20, 422, 80, 20);
-        HWND hCloseCombo = CreateCombo(hwnd, 100, 420, 200, 200, IDC_COMBO_CLOSE_ACTION);
-
-        // 填充采样率选项
-        const wchar_t* hzItems[] = {L"125 Hz", L"250 Hz", L"500 Hz", L"1K Hz", L"2K Hz", L"4K Hz", L"8K Hz"};
-        for (int i = 0; i < 7; i++) SendMessage(hSampleCombo, CB_ADDSTRING, 0, (LPARAM)hzItems[i]);
-        SendMessage(hSampleCombo, CB_SETCURSEL, 3, 0); // 默认 1K Hz
-
-        // 填充关闭行为选项
-        SendMessage(hCloseCombo, CB_ADDSTRING, 0, (LPARAM)L"询问");
-        SendMessage(hCloseCombo, CB_ADDSTRING, 0, (LPARAM)L"最小化到托盘");
-        SendMessage(hCloseCombo, CB_ADDSTRING, 0, (LPARAM)L"退出程序");
-
-        // 从注册表加载关闭行为
-        HKEY hKey;
-        if (RegOpenKeyEx(HKEY_CURRENT_USER, L"Software\\AutoClicker", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-            DWORD val = 0, sz = sizeof(val);
-            RegQueryValueEx(hKey, L"CloseAction", nullptr, nullptr, (LPBYTE)&val, &sz);
-            if (val <= 2) g.closeAction = (int)val;
-            RegCloseKey(hKey);
-        }
-        SendMessage(hCloseCombo, CB_SETCURSEL, g.closeAction, 0);
-
-        // ── 反检测 ──
-        CreateCheck(hwnd, L"随机间隔 ±20%", 20, 454, 130, 24, IDC_CHECK_RAND_DELAY, true);
-        CreateCheck(hwnd, L"位置微抖 ±4px", 160, 454, 130, 24, IDC_CHECK_RAND_POS, true);
+        // ── 齿轮按钮 ──
+        CreateButton(hwnd, L"⚙", 405, 14, 28, 24, IDC_BTN_SETTINGS);
 
         // ── 操作录制 ──
-        CreateLabel(hwnd, L"操作录制:", 20, 488, 80, 22);
+        CreateLabel(hwnd, L"操作录制:", 20, 358, 80, 22);
 
-        CreateButton(hwnd, L"● 录制(F7)", 20, 512, 75, 28, IDC_BTN_RECORD);
-        CreateButton(hwnd, L"▶ 播放(F8)", 98, 512, 80, 28, IDC_BTN_REPLAY);
-        CreateButton(hwnd, L"清空", 176, 512, 55, 28, IDC_BTN_CLEAR_REC);
-        CreateButton(hwnd, L"导出", 236, 512, 55, 28, IDC_BTN_EXPORT);
-        CreateButton(hwnd, L"导入", 296, 512, 55, 28, IDC_BTN_IMPORT);
+        
+        std::wstring recText = L"● 录制(" + HotkeyToString(g.hotkeyRecord, g.hkModRecord) + L")";
+        CreateButton(hwnd, recText.c_str(), 20, 382, 75, 28, IDC_BTN_RECORD);
+        std::wstring repText = L"▶ 播放(" + HotkeyToString(g.hotkeyReplay, g.hkModReplay) + L")";
+        CreateButton(hwnd, repText.c_str(), 98, 382, 75, 28, IDC_BTN_REPLAY);
+        CreateButton(hwnd, L"清空", 176, 382, 55, 28, IDC_BTN_CLEAR_REC);
+        CreateButton(hwnd, L"导出", 236, 382, 55, 28, IDC_BTN_EXPORT);
+        CreateButton(hwnd, L"导入", 296, 382, 55, 28, IDC_BTN_IMPORT);
+        CreateCheck(hwnd, L"记录轨迹", 20, 414, 85, 24, IDC_CHECK_TRAJECTORY, true);
 
         // 已导入文件列表
-        CreateLabel(hwnd, L"已导入文件 (点击切换):", 20, 548, 180, 20);
+        CreateLabel(hwnd, L"已导入文件 (点击切换):", 20, 444, 180, 20);
 
         g.hImportedList = CreateWindow(L"LISTBOX", nullptr,
                                         WS_CHILD | WS_VISIBLE | WS_BORDER |
                                         WS_VSCROLL | LBS_NOTIFY,
-                                        20, 568, 410, 52, hwnd,
+                                        20, 464, 410, 52, hwnd,
                                         (HMENU)(INT_PTR)IDC_LIST_IMPORTED,
                                         GetModuleHandle(nullptr), nullptr);
-        // 初始化：只有"当前录制"
         SendMessage(g.hImportedList, LB_ADDSTRING, 0, (LPARAM)L"<当前录制>");
         SendMessage(g.hImportedList, LB_SETITEMDATA, 0, -1);
         SendMessage(g.hImportedList, LB_SETCURSEL, 0, 0);
 
         // 播放设置 + 当前动作数
-        SetDlgItemText(hwnd, IDC_LABEL_RECORD, L"当前动作: 0 个");
-        CreateLabel(hwnd, L"当前动作: 0 个", 20, 626, 140, 20);
-        CreateLabel(hwnd, L"播放次数:", 170, 626, 70, 22);
-        CreateEdit(hwnd, L"1", 240, 624, 40, 22, IDC_EDIT_REPLAY_N);
-        CreateCheck(hwnd, L"循环", 290, 626, 55, 22, IDC_REPLAY_LOOP, false);
+        CreateWindow(L"STATIC", L"当前动作: 0 个", WS_CHILD | WS_VISIBLE, 20, 522, 200, 20,
+                     hwnd, (HMENU)(INT_PTR)IDC_LABEL_RECORD, GetModuleHandle(nullptr), nullptr);
+        CreateLabel(hwnd, L"播放次数:", 170, 522, 70, 22);
+        CreateEdit(hwnd, L"1", 240, 520, 40, 22, IDC_EDIT_REPLAY_N);
+        CreateCheck(hwnd, L"循环", 290, 522, 55, 22, IDC_REPLAY_LOOP, false);
 
         g.hList = CreateWindow(L"LISTBOX", nullptr,
                                 WS_CHILD | WS_VISIBLE | WS_BORDER |
                                 WS_VSCROLL | LBS_NOSEL | LBS_NOTIFY,
-                                20, 652, 410, 84, hwnd,
+                                20, 548, 410, 84, hwnd,
                                 (HMENU)(INT_PTR)IDC_LIST_RECORD,
                                 GetModuleHandle(nullptr), nullptr);
 
-        CreateSep(hwnd, 20, 744, 410);
+        CreateSep(hwnd, 20, 640, 410);
 
         // ── 底部状态区 ──
-        CreateLabel(hwnd, L"热键: F6 开始    F7 录制    F8 播放", 20, 752, 260, 22);
+        // Row 1: 热键标签 + 点击计数
+        CreateWindow(L"STATIC", L"", WS_CHILD | WS_VISIBLE, 20, 646, 300, 22,
+                     hwnd, (HMENU)(INT_PTR)IDC_HOTKEY_LABEL, GetModuleHandle(nullptr), nullptr);
+        UpdateHotkeyLabel(hwnd);
 
-        SetDlgItemText(hwnd, IDC_COUNT_LABEL, L"已点击: 0 次");
-        CreateLabel(hwnd, L"已点击: 0 次", 300, 752, 130, 22);
+        CreateWindow(L"STATIC", L"已点击: 0 次", WS_CHILD | WS_VISIBLE, 280, 646, 300, 22,
+                     hwnd, (HMENU)(INT_PTR)IDC_COUNT_LABEL, GetModuleHandle(nullptr), nullptr);
 
-        SetDlgItemText(hwnd, IDC_STATUS_LABEL, L"●  已停止");
-        CreateLabel(hwnd, L"●  已停止", 20, 780, 120, 22);
+        // Row 2: 状态 + 开始/停止按钮
+        CreateWindow(L"STATIC", L"●  已停止", WS_CHILD | WS_VISIBLE, 10, 674, 120, 22,
+                     hwnd, (HMENU)(INT_PTR)IDC_STATUS_LABEL, GetModuleHandle(nullptr), nullptr);
 
-        CreateButton(hwnd, L"▶  开始 (F6)", 240, 742, 95, 30, IDC_BTN_START);
-        CreateButton(hwnd, L"■  停止", 340, 742, 90, 30, IDC_BTN_STOP);
+        {
+            std::wstring btnStart = L"▶  开始 (";
+            btnStart += HotkeyToString(g.hotkeyStart, g.hkModStart) + L")";
+            CreateButton(hwnd, btnStart.c_str(), 210, 670, 90, 26, IDC_BTN_START);
+            CreateButton(hwnd, L"■  停止", 305, 670, 85, 26, IDC_BTN_STOP);
+        }
 
         // 初始化禁用状态
         EnableWindow(GetDlgItem(hwnd, IDC_BTN_STOP), FALSE);
@@ -1253,9 +1776,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
         SendMessage(g.hList, WM_SETFONT, (WPARAM)hListFont, TRUE);
         SendMessage(g.hImportedList, WM_SETFONT, (WPARAM)hListFont, TRUE);
 
-        RegisterHotKey(hwnd, 1, 0, VK_F6);
-        RegisterHotKey(hwnd, 2, 0, VK_F7);
-        RegisterHotKey(hwnd, 3, 0, VK_F8);
+        // 加载注册表中的所有设置
+        LoadAllSettings();
+        UpdateHotkeyLabel(hwnd);
+        ToggleTopmost(hwnd);
+        RegisterHotKey(hwnd, 1, g.hkModStart,  g.hotkeyStart);
+        RegisterHotKey(hwnd, 2, g.hkModRecord, g.hotkeyRecord);
+        RegisterHotKey(hwnd, 3, g.hkModReplay, g.hotkeyReplay);
 
         return 0;
     }
@@ -1275,44 +1802,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
     }
 
     case WM_LBUTTONDOWN:
-        if (g.pickingPosition) {
-            POINT pt;
-            GetCursorPos(&pt);
-            g.fixedX = pt.x; g.fixedY = pt.y;
-            wchar_t buf[16];
-            _itow_s(g.fixedX, buf, 10); SetDlgItemText(hwnd, IDC_EDIT_X, buf);
-            _itow_s(g.fixedY, buf, 10); SetDlgItemText(hwnd, IDC_EDIT_Y, buf);
-            g.followCursor = false;
-            g.pickingPosition = false;
-            ReleaseCapture();
-            SetCursor(LoadCursor(nullptr, IDC_ARROW));
-            SetDlgItemText(hwnd, IDC_BTN_PICK_POS, L"📌");
-            CheckRadioButton(hwnd, IDC_CURSOR_FOLLOW, IDC_CURSOR_FIXED, IDC_CURSOR_FIXED);
-            UpdateUI(hwnd);
-            return 0;
-        }
         SetFocus(hwnd);  // 点击窗口空白处使输入框失焦
         return 0;
 
-    case WM_RBUTTONDOWN:
-        if (g.pickingPosition) {
-            g.pickingPosition = false;
-            ReleaseCapture();
-            SetCursor(LoadCursor(nullptr, IDC_ARROW));
-            SetDlgItemText(hwnd, IDC_BTN_PICK_POS, L"📌");
-            return 0;
-        }
-        return 0;
-
-    case WM_KEYDOWN:
-        if (wp == VK_ESCAPE && g.pickingPosition) {
-            g.pickingPosition = false;
-            ReleaseCapture();
-            SetCursor(LoadCursor(nullptr, IDC_ARROW));
-            SetDlgItemText(hwnd, IDC_BTN_PICK_POS, L"📌");
-            return 0;
-        }
-        return 0;
 
     case WM_HOTKEY:
         if (wp == 1) {
@@ -1325,6 +1817,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             if (g.isReplaying) StopReplay(hwnd);
             else StartReplay(hwnd);
         }
+        UpdateUI(hwnd);
         return 0;
 
     case WM_TIMER:
@@ -1345,6 +1838,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             }
             std::wstringstream ss;
             ss << L"已点击: " << g.clickCount << L" 次";
+            if (g_lastClickMode >= 0) {
+                ss << L"  [" << (g_lastClickMode ? L"固定" : L"跟随")
+                   << L" (" << g_lastClickPt.x << L"," << g_lastClickPt.y << L")]";
+            }
             SetDlgItemText(hwnd, IDC_COUNT_LABEL, ss.str().c_str());
         }
         else if (wp == IDC_REPLAY_TIMER && g.isReplaying) {
@@ -1363,12 +1860,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                 g.ignoreNextDown = true;
                 SimulateAction(a);
                 g.ignoreNextDown = false;
-                g.clickCount++;
                 g.replayIndex++;
-
-                std::wstringstream ss;
-                ss << L"已点击: " << g.clickCount << L" 次";
-                SetDlgItemText(hwnd, IDC_COUNT_LABEL, ss.str().c_str());
 
                 DWORD nextDelay = (g.replayIndex < g.actions.size())
                                   ? g.actions[g.replayIndex].delayMs
@@ -1399,61 +1891,49 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             return 0;
         }
         switch (LOWORD(wp)) {
-        case IDC_BTN_LEFT:    g.mouseButton = 0; return 0;
-        case IDC_BTN_RIGHT:   g.mouseButton = 1; return 0;
-        case IDC_BTN_MIDDLE:  g.mouseButton = 2; return 0;
-        case IDC_SINGLE:      g.clickMode = 0; return 0;
-        case IDC_DOUBLE:      g.clickMode = 1; return 0;
+        case IDC_BTN_LEFT: case IDC_BTN_RIGHT: case IDC_BTN_MIDDLE:
+            if (g.settingRadio) return 0;
+            if      (IsDlgButtonChecked(hwnd, IDC_BTN_LEFT))   g.mouseButton = 0;
+            else if (IsDlgButtonChecked(hwnd, IDC_BTN_MIDDLE)) g.mouseButton = 2;
+            else                                               g.mouseButton = 1;
+            return 0;
+        case IDC_SINGLE: case IDC_DOUBLE:
+            if (g.settingRadio) return 0;
+            g.clickMode = (IsDlgButtonChecked(hwnd, IDC_SINGLE) == BST_CHECKED) ? 0 : 1;
+            return 0;
 
-        case IDC_REPEAT_FOREVER: g.repeatForever = true;  UpdateUI(hwnd); return 0;
-        case IDC_REPEAT_COUNT:   g.repeatForever = false; UpdateUI(hwnd); return 0;
+        case IDC_REPEAT_FOREVER: case IDC_REPEAT_COUNT:
+            if (g.settingRadio) return 0;
+            g.repeatForever = (IsDlgButtonChecked(hwnd, IDC_REPEAT_FOREVER) == BST_CHECKED);
+            UpdateUI(hwnd); return 0;
 
-        case IDC_CURSOR_FOLLOW: g.followCursor = true;  UpdateUI(hwnd); return 0;
-        case IDC_CURSOR_FIXED:  g.followCursor = false; UpdateUI(hwnd); return 0;
+        case IDC_CURSOR_FOLLOW: case IDC_CURSOR_FIXED:
+            if (g.settingRadio) return 0;
+            g.followCursor = (IsDlgButtonChecked(hwnd, IDC_CURSOR_FOLLOW) == BST_CHECKED);
+            UpdateUI(hwnd); return 0;
         case IDC_BTN_PICK_POS:
             g.pickingPosition = true;
-            SetCapture(hwnd);
+            g_pickHook = SetWindowsHookEx(WH_MOUSE_LL, PickMouseProc, GetModuleHandle(nullptr), 0);
             SetCursor(LoadCursor(nullptr, IDC_CROSS));
             SetDlgItemText(hwnd, IDC_BTN_PICK_POS, L"...");
             return 0;
 
-        case IDC_CHECK_TOPMOST:
-            g.topmost = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_TOPMOST), BM_GETCHECK, 0, 0) == BST_CHECKED);
-            ToggleTopmost(hwnd);
+        case IDC_BTN_SETTINGS:
+            if (!g.hwndSettings) {
+                UnregisterHotKey(hwnd, 1);
+                UnregisterHotKey(hwnd, 2);
+                UnregisterHotKey(hwnd, 3);
+                RECT mw;
+                GetWindowRect(hwnd, &mw);
+                g.hwndSettings = CreateWindowEx(WS_EX_TOPMOST, L"SettingsWindow", L"设置",
+                    WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_VISIBLE,
+                    mw.left + 45, mw.top + 80, SET_WIDTH, SET_HEIGHT,
+                    nullptr, nullptr, g_hInst, nullptr);
+            }
             return 0;
 
         case IDC_CHECK_TRAJECTORY:
             g.recordTrajectory = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_TRAJECTORY), BM_GETCHECK, 0, 0) == BST_CHECKED);
-            return 0;
-
-        case IDC_CHECK_HIDE:
-            g.hideOnAction = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_HIDE), BM_GETCHECK, 0, 0) == BST_CHECKED);
-            return 0;
-
-        case IDC_CHECK_RECORD_SELF:
-            g.recordSelfWin = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_RECORD_SELF), BM_GETCHECK, 0, 0) == BST_CHECKED);
-            return 0;
-
-        case IDC_CHECK_RAND_DELAY:
-            g.randomizeInterval = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_RAND_DELAY), BM_GETCHECK, 0, 0) == BST_CHECKED);
-            return 0;
-
-        case IDC_CHECK_RAND_POS:
-            g.randomizePosition = (SendMessage(GetDlgItem(hwnd, IDC_CHECK_RAND_POS), BM_GETCHECK, 0, 0) == BST_CHECKED);
-            return 0;
-
-        case IDC_COMBO_SAMPLE_RATE:
-            if (HIWORD(wp) == CBN_SELCHANGE) {
-                int hzVals[] = {125, 250, 500, 1000, 2000, 4000, 8000};
-                int idx = (int)SendMessage(GetDlgItem(hwnd, IDC_COMBO_SAMPLE_RATE), CB_GETCURSEL, 0, 0);
-                if (idx >= 0 && idx < 7) g.sampleRateHz = hzVals[idx];
-            }
-            return 0;
-
-        case IDC_COMBO_CLOSE_ACTION:
-            if (HIWORD(wp) == CBN_SELCHANGE) {
-                g.closeAction = (int)SendMessage(GetDlgItem(hwnd, IDC_COMBO_CLOSE_ACTION), CB_GETCURSEL, 0, 0);
-            }
             return 0;
 
         case IDC_BTN_START:
@@ -1521,7 +2001,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                 L"关闭选项", MB_YESNO | MB_ICONQUESTION);
             if (res == IDYES) {
                 g.closeAction = 1;
-                SaveCloseAction();
+                SaveAllSettings();
                 SendMessage(GetDlgItem(hwnd, IDC_COMBO_CLOSE_ACTION), CB_SETCURSEL, 1, 0);
                 g.inTray = true;
                 CreateTrayIcon(hwnd);
@@ -1529,7 +2009,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
                 return 0;
             } else {
                 g.closeAction = 2;
-                SaveCloseAction();
+                SaveAllSettings();
                 SendMessage(GetDlgItem(hwnd, IDC_COMBO_CLOSE_ACTION), CB_SETCURSEL, 2, 0);
                 break;
             }
@@ -1580,10 +2060,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
             else
                 SetTextColor(hdc, RGB(160, 160, 160));
         }
-        return (LRESULT)GetStockObject(HOLLOW_BRUSH);
+        static HBRUSH hBg = CreateSolidBrush(GetSysColor(COLOR_WINDOW));
+        return (LRESULT)hBg;
     }
 
     case WM_DESTROY:
+        if (g.hwndSettings) DestroyWindow(g.hwndSettings);
         UnregisterHotKey(hwnd, 1);
         UnregisterHotKey(hwnd, 2);
         UnregisterHotKey(hwnd, 3);
@@ -1604,6 +2086,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
     g_hInst = hInst;
 
     const wchar_t CLASS_NAME[] = L"AutoClickerWindow";
+    const wchar_t SETTINGS_CLASS[] = L"SettingsWindow";
 
     WNDCLASS wc = {};
     wc.lpfnWndProc   = WndProc;
@@ -1612,19 +2095,24 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
     wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wc.hCursor       = LoadCursor(nullptr, IDC_ARROW);
     wc.hIcon         = LoadIcon(hInst, MAKEINTRESOURCE(1));
-
     RegisterClass(&wc);
 
-    int ww = 450, wh = 850;
-    int x  = (GetSystemMetrics(SM_CXSCREEN) - ww) / 2;
-    int y  = (GetSystemMetrics(SM_CYSCREEN) - wh) / 2;
+    wc.lpfnWndProc   = SettingsWndProc;
+    wc.lpszClassName = SETTINGS_CLASS;
+    wc.hIcon         = nullptr;
+    RegisterClass(&wc);
 
+    int x  = (GetSystemMetrics(SM_CXSCREEN) - MAIN_WIDTH) / 2;
+    int y  = (GetSystemMetrics(SM_CYSCREEN) - MAIN_HEIGHT ) / 2;
+
+    std::wstring AppName = L"连点器  Auto Clicker";
+    AppName += L" v" VERSION_NUMBER;
     HWND hwnd = CreateWindowEx(
         g.topmost ? WS_EX_TOPMOST : 0,
         CLASS_NAME,
-        L"连点器  Auto Clicker",
+        AppName.c_str(),
         WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-        x, y, ww, wh,
+        x, y, MAIN_WIDTH, MAIN_HEIGHT,
         nullptr, nullptr, hInst, nullptr
     );
 
@@ -1635,6 +2123,13 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow) {
 
     MSG msg = {};
     while (GetMessage(&msg, nullptr, 0, 0)) {
+        if (msg.message == WM_KEYDOWN && msg.wParam == VK_ESCAPE && g.pickingPosition) {
+            g.pickingPosition = false;
+            if (g_pickHook) { UnhookWindowsHookEx(g_pickHook); g_pickHook = nullptr; }
+            SetCursor(LoadCursor(nullptr, IDC_ARROW));
+            SetDlgItemText(hwnd, IDC_BTN_PICK_POS, L"📌");
+            continue;
+        }
         if (!IsDialogMessage(hwnd, &msg)) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
